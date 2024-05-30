@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cache Storage</title>
+    </head>
+
+    <body>
+        <header>
+            <h1>Friend Maker</h1>
+        </header>
+
+        <main>
+            <h2>List of <span>0</span> friends</h2>
+            <ul id="friends-list">
+                <li>So lonely..</li>
+            </ul>
+        </main>
+
+        <aside>
+            <h2>Add a Friend</h2>
+            <form id="form">
+                <div class="formbox">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Friend's name" />
+                </div>
+
+                <div class="formbox">
+                    <label for="dob">Birthday</label>
+                    <input type="date" id="dob" name="dob" min="1900-01-01" max="2023-12-31" />
+                </div>
+
+                <div class="formbox">
+                    <label for="avatar">Avatar</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*" />
+                </div>
+
+                <div class="formbox">
+                    <button id="btnAddFriend">Add Friend</button>
+                </div>
+            </form>
+        </aside>
+
+        <script src="./js/main.js"></script>
+    </body>
+</html>
