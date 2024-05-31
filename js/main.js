@@ -1,5 +1,3 @@
-// try cache.match????
-
 const APP = {
     myJSONCache: null,
     myImageCache: null,
@@ -22,21 +20,23 @@ const APP = {
         ev.preventDefault();
         console.log("Saving friend to cache.");
 
-        const form = ev.target;
-        console.log(form);
+        // const form = ev.target;
+        // console.log(form);
 
         //make sure everything is filled out.
-        const friendName = document.getElementById("name").value;
+        let friendName = document.getElementById("name").value;
         if (!friendName) {
-            return alert("Please enter in your friend's name.");
+            alert("Please enter in your friend's name.");
+            return;
         }
 
-        const friendDOB = document.getElementById("dob").value;
+        let friendDOB = document.getElementById("dob").value;
         if (!friendDOB) {
-            return alert("Please enter in your friend's date of birth.");
+            alert("Please enter in your friend's date of birth.");
+            return;
         }
 
-        const friendAvatarFile = document.getElementById("avatar").files[0];
+        let friendAvatarFile = document.getElementById("avatar").files[0];
         if (!friendAvatarFile) {
             return alert("Please enter in your friend's image.");
         }
@@ -66,9 +66,9 @@ const APP = {
             }
         });
         console.log(friendResponse);
-
-        APP.myJSONCache.put(friend.id, friendResponse);
-
+        const myJSONCache = APP.myJSONCache;
+        await myJSONCache.put(friend.id, friendResponse);
+        
         // save the image in the image cache
         const friendAvatarResponse = new Response(friendAvatarFile, {
             status: 200, 
@@ -79,8 +79,9 @@ const APP = {
             }
         });
         console.log(friendAvatarResponse);
-
-        APP.myImageCache.put(friend.avatar, friendAvatarResponse);
+        
+        const myImageCache = APP.myImageCache;
+        await myImageCache.put(friend.avatar, friendAvatarResponse);
 
         //when complete call the function to update the list of people
         APP.showFriendsList();
@@ -89,34 +90,77 @@ const APP = {
     showFriendsList: async () => {
         //show the contents of cache as a list of cards
         console.log("Showing List of Friends.");
+        
+        const myJSONCache = APP.myJSONCache;
+        const myImageCache = APP.myImageCache;
 
-        const keys = await APP.myJSONCache.keys();
+        const keys = await myJSONCache.keys();
+        let df = new DocumentFragment();
 
         for (let key of keys) {
+            console.log("\n\nNew friend");
+
             // get back the response object (just like using fetch)
-            const responseJSON = await APP.myJSONCache.match(key);
-            // console.log(responseJSON);
+            const responseJSON = await myJSONCache.match(key);
+            console.log("Response for Data", responseJSON);
 
             // convert the response object to json (just like collecting the data)
             const friend = await responseJSON.json();
-            // console.log(friend);
+            console.log("JSON Object for Data", friend);
 
             // get back image from cache
-            const responseImage = await APP.myImageCache.match(friend.avatar);
-            // console.log(responseImage);
+            const responseImage = await myImageCache.match(friend.avatar);
+            console.log("Response for Image", responseImage);
 
             const friendAvatar = await responseImage.blob();
-            const friendAvatarURL = URL.createObjectURL(friendAvatar);
-            // console.log(friendAvatarURL);;
+            console.log("Blob for Image", friendAvatar);
 
-            APP.makeCard({...friend, url: friendAvatarURL});
+            const friendAvatarURL = URL.createObjectURL(friendAvatar);
+            console.log(friendAvatarURL);
+
+            const card = APP.makeCard({...friend, url: friendAvatarURL});
+            df.append(card);
         }
+
+        const friendsList = document.getElementById("friends-list");
+        friendsList.innerHTML = "";
+        friendsList.appendChild(df);
+
+        document.getElementById("friend__count").textContent = keys.length;
     },
 
     makeCard: (friend) => {
         //create HTML card for a friend in the <ul>
         console.log("Creating HTML Friend Card.");
-        console.log(friend);
+        // console.log(friend);
+
+        const dob = new Date(friend.dob);
+        const dobString = `${dob.toDateString().split(" ")[1]} ${dob.getDate()+1}, ${dob.getFullYear()}`;
+        
+        const card = document.createElement("li");
+        card.setAttribute("data-ref", friend.id);
+        card.className = "card";
+        
+        const friendImage = document.createElement("img");
+        friendImage.className = "avatar";
+        friendImage.src = friend.url;
+        friendImage.alt = friend.name;
+        
+        const div = document.createElement("div");
+        div.className = "info"
+        
+        const friendName = document.createElement("h3");
+        friendName.className = "name";
+        friendName.textContent = friend.name;
+        
+        const friendDOB = document.createElement("p");
+        friendDOB.className = "dob";
+        friendDOB.textContent = dobString;
+
+        div.append(friendName, friendDOB);
+        card.append(friendImage, div);
+
+        return card;
     }
 }
 
