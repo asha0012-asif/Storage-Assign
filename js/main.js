@@ -24,19 +24,19 @@ const APP = {
         // console.log(form);
 
         //make sure everything is filled out.
-        let friendName = document.getElementById("name").value;
+        const friendName = document.getElementById("name").value;
         if (!friendName) {
             alert("Please enter in your friend's name.");
             return;
         }
         
-        let friendDOB = document.getElementById("dob").value;
+        const friendDOB = document.getElementById("dob").value;
         if (!friendDOB) {
             alert("Please enter in your friend's date of birth.");
             return;
         }
 
-        let friendAvatarFile = document.getElementById("avatar").files[0];
+        const friendAvatarFile = document.getElementById("avatar").files[0];
         if (!friendAvatarFile) {
             return alert("Please enter in your friend's image.");
         }
@@ -50,10 +50,7 @@ const APP = {
             avatar: `/${friendID}.${friendAvatarFile.type.split("/")[1]}`
         }
 
-        const friendJSON = JSON.stringify(friend);
-        console.log(friendJSON);
-
-        const friendFile = new File([friendJSON], friend.id, { type: "application/json"});
+        const friendFile = new File([JSON.stringify(friend)], friend.id, { type: "application/json"});
         console.log(friendFile);
 
         // create the JSON string and save it in the json cache
@@ -67,8 +64,8 @@ const APP = {
             }
         });
         console.log(friendResponse);
-        const myJSONCache = APP.myJSONCache;
-        await myJSONCache.put(friend.id, friendResponse);
+
+        await APP.myJSONCache.put(friend.id, friendResponse);
         
         // save the image in the image cache
         const friendAvatarResponse = new Response(friendAvatarFile, {
@@ -81,8 +78,7 @@ const APP = {
         });
         console.log(friendAvatarResponse);
         
-        const myImageCache = APP.myImageCache;
-        await myImageCache.put(friend.avatar, friendAvatarResponse);
+        await APP.myImageCache.put(friend.avatar, friendAvatarResponse);
 
         form.reset();
 
@@ -93,11 +89,8 @@ const APP = {
     showFriendsList: async () => {
         //show the contents of cache as a list of cards
         console.log("Showing List of Friends:");
-        
-        const myJSONCache = APP.myJSONCache;
-        const myImageCache = APP.myImageCache;
 
-        const keys = await myJSONCache.keys();
+        const keys = await APP.myJSONCache.keys();
 
         const friendsList = document.getElementById("friends-list");
         friendsList.innerHTML = "";
@@ -111,7 +104,7 @@ const APP = {
                 console.log("\n\nNew friend");
 
                 // get back the response object (just like using fetch)
-                const responseJSON = await myJSONCache.match(key);
+                const responseJSON = await APP.myJSONCache.match(key);
                 console.log("Response for Data", responseJSON);
 
                 // convert the response object to json (just like collecting the data)
@@ -119,7 +112,7 @@ const APP = {
                 console.log("JSON Object for Data", friend);
 
                 // get back image from cache
-                const responseImage = await myImageCache.match(friend.avatar);
+                const responseImage = await APP.myImageCache.match(friend.avatar);
                 console.log("Response for Image", responseImage);
 
                 const friendAvatar = await responseImage.blob();
