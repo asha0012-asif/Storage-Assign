@@ -1,17 +1,4 @@
-/*
-create an object like
-{
-  id: '1234-2342343-3423423424', //uuid
-  name: 'friend',
-  dob: '2000-06-01',
-  avatar: 'filename same as id',
-}
-- submit form
-- generate UUID
-- file -> rename -> response -> cache
-- json with filename, name, dob, id
-- json -> file -> response -> cache
-*/
+// try cache.match????
 
 const APP = {
     myJSONCache: null,
@@ -28,7 +15,7 @@ const APP = {
         document.getElementById("form").addEventListener("submit", APP.saveFriend);
 
         //build list of friends
-
+        APP.showFriendsList();
     },
 
     saveFriend: async (ev) => {
@@ -60,21 +47,27 @@ const APP = {
             id: friendID,
             name: friendName,
             dob: friendDOB,
-            avatar: `${friendID}.${friendAvatarFile.type.split("/")[1]}`
+            avatar: `/${friendID}.${friendAvatarFile.type.split("/")[1]}`
         }
-        console.log(friend);
+        const friendJSON = JSON.stringify(friend);
+        console.log(friendJSON);
+
+        const friendFile = new File([friendJSON], friend.id, { type: "application/json"});
+        console.log(friendFile);
 
         // create the JSON string and save it in the json cache
-        const friendResponse = new Response(friend, {
+        const friendResponse = new Response(friendFile, {
             status: 200,
             statusText: "Ok",
+            url: friendFile.url,
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": friendFile.type,
+                "Content-Length": friendFile.size
             }
         });
         console.log(friendResponse);
 
-        APP.myJSONCache.put(JSON.stringify(friend), friendResponse);
+        APP.myJSONCache.put(friend.id, friendResponse);
 
         // save the image in the image cache
         const friendAvatarResponse = new Response(friendAvatarFile, {
@@ -93,14 +86,37 @@ const APP = {
         APP.showFriendsList();
     },
 
-    showFriendsList: () => {
+    showFriendsList: async () => {
         //show the contents of cache as a list of cards
         console.log("Showing List of Friends.");
+
+        const keys = await APP.myJSONCache.keys();
+
+        for (let key of keys) {
+            // get back the response object (just like using fetch)
+            const responseJSON = await APP.myJSONCache.match(key);
+            // console.log(responseJSON);
+
+            // convert the response object to json (just like collecting the data)
+            const friend = await responseJSON.json();
+            // console.log(friend);
+
+            // get back image from cache
+            const responseImage = await APP.myImageCache.match(friend.avatar);
+            // console.log(responseImage);
+
+            const friendAvatar = await responseImage.blob();
+            const friendAvatarURL = URL.createObjectURL(friendAvatar);
+            // console.log(friendAvatarURL);;
+
+            APP.makeCard({...friend, url: friendAvatarURL});
+        }
     },
 
     makeCard: (friend) => {
         //create HTML card for a friend in the <ul>
-
+        console.log("Creating HTML Friend Card.");
+        console.log(friend);
     }
 }
 
