@@ -20,7 +20,7 @@ const APP = {
         ev.preventDefault();
         console.log("Saving friend to cache.");
 
-        // const form = ev.target;
+        const form = ev.target;
         // console.log(form);
 
         //make sure everything is filled out.
@@ -29,7 +29,7 @@ const APP = {
             alert("Please enter in your friend's name.");
             return;
         }
-
+        
         let friendDOB = document.getElementById("dob").value;
         if (!friendDOB) {
             alert("Please enter in your friend's date of birth.");
@@ -49,6 +49,7 @@ const APP = {
             dob: friendDOB,
             avatar: `/${friendID}.${friendAvatarFile.type.split("/")[1]}`
         }
+
         const friendJSON = JSON.stringify(friend);
         console.log(friendJSON);
 
@@ -83,50 +84,59 @@ const APP = {
         const myImageCache = APP.myImageCache;
         await myImageCache.put(friend.avatar, friendAvatarResponse);
 
+        form.reset();
+
         //when complete call the function to update the list of people
         APP.showFriendsList();
     },
 
     showFriendsList: async () => {
         //show the contents of cache as a list of cards
-        console.log("Showing List of Friends.");
+        console.log("Showing List of Friends:");
         
         const myJSONCache = APP.myJSONCache;
         const myImageCache = APP.myImageCache;
 
         const keys = await myJSONCache.keys();
-        let df = new DocumentFragment();
-
-        for (let key of keys) {
-            console.log("\n\nNew friend");
-
-            // get back the response object (just like using fetch)
-            const responseJSON = await myJSONCache.match(key);
-            console.log("Response for Data", responseJSON);
-
-            // convert the response object to json (just like collecting the data)
-            const friend = await responseJSON.json();
-            console.log("JSON Object for Data", friend);
-
-            // get back image from cache
-            const responseImage = await myImageCache.match(friend.avatar);
-            console.log("Response for Image", responseImage);
-
-            const friendAvatar = await responseImage.blob();
-            console.log("Blob for Image", friendAvatar);
-
-            const friendAvatarURL = URL.createObjectURL(friendAvatar);
-            console.log(friendAvatarURL);
-
-            const card = APP.makeCard({...friend, url: friendAvatarURL});
-            df.append(card);
-        }
 
         const friendsList = document.getElementById("friends-list");
         friendsList.innerHTML = "";
-        friendsList.appendChild(df);
+        
+        if (keys.length === 0) {
+            friendsList.innerHTML = `<li class="card">So lonely...</li>`;
+        } else {
+            let df = new DocumentFragment();
 
-        document.getElementById("friend__count").textContent = keys.length;
+            for (let key of keys) {
+                console.log("\n\nNew friend");
+
+                // get back the response object (just like using fetch)
+                const responseJSON = await myJSONCache.match(key);
+                console.log("Response for Data", responseJSON);
+
+                // convert the response object to json (just like collecting the data)
+                const friend = await responseJSON.json();
+                console.log("JSON Object for Data", friend);
+
+                // get back image from cache
+                const responseImage = await myImageCache.match(friend.avatar);
+                console.log("Response for Image", responseImage);
+
+                const friendAvatar = await responseImage.blob();
+                console.log("Blob for Image", friendAvatar);
+
+                const friendAvatarURL = URL.createObjectURL(friendAvatar);
+                console.log(friendAvatarURL);
+
+                const card = APP.makeCard({...friend, url: friendAvatarURL});
+                df.append(card);
+            }
+
+            friendsList.appendChild(df);
+
+            document.getElementById("friend__count").innerText = keys.length;
+        } 
+
     },
 
     makeCard: (friend) => {
@@ -144,7 +154,7 @@ const APP = {
         const friendImage = document.createElement("img");
         friendImage.className = "avatar";
         friendImage.src = friend.url;
-        friendImage.alt = friend.name;
+        friendImage.alt = `${friend.name} avatar`;
         
         const div = document.createElement("div");
         div.className = "info"

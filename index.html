@@ -5,6 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cache Storage</title>
 
+        <!-- GOOGLE FONTS - Noto Sans -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+        <!-- CSS STYLESHEET LINKS -->
+        <link rel="stylesheet" href="./css/css-reset.css">
         <link rel="stylesheet" href="./css/main.css">
     </head>
 
@@ -13,11 +20,13 @@
             <header class="header">
                 <h1>Friend Maker</h1>
             </header>
-            <main>
+
+            <main class="main">
                 <h2 class="friends-list__title">List of <span id="friend__count">0</span> friend(s)</h2>
                 <ul id="friends-list"></ul>
             </main>
-            <aside>
+
+            <aside class="aside">
                 <h2>Add a Friend</h2>
                 <form id="form">
                     <div class="formbox">
@@ -32,9 +41,7 @@
                         <label for="avatar">Avatar</label>
                         <input type="file" id="avatar" name="avatar" accept="image/*" />
                     </div>
-                    <div class="formbox">
-                        <button id="btnAddFriend">Add Friend</button>
-                    </div>
+                    <button id="btnAddFriend">Add Friend</button>
                 </form>
             </aside>
         </div>

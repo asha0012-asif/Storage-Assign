@@ -1,48 +1,107 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+:root {
+    --color--primary: #373737;
+    --color--black: #171717;
 }
 
-header,
-main,
-aside {
-    width: 100%;
+html {
+    font-family: "Noto Sans", sans-serif;
 }
 
 body {
-    display: grid;
-    justify-items: center;
+    background-color: var(--color--black);
 }
 
+/* ------ CONTAINER ------ */
+.container {
+    width: min(65rem, 100%);
+    padding-inline: auto;
+    margin: 0 auto;
+}
+
+/* --- IMAGES --- */
+img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+/* ------ TYPE HIERARCHY ------ */
+h1,
+h2,
+h3
+{
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.027rem;
+  text-align: center;
+
+  @media only screen and (min-width: 45rem) {
+    font-size: 2.488rem;
+  }
+}
+
+h2 {
+  font-size: 1.802rem;
+  margin-bottom: 1rem;
+
+  @media only screen and (min-width: 45rem) {
+    font-size: 2.074rem;
+  }
+}
+
+h3 {
+  font-size: 1.602rem;
+  margin-bottom: 0.5rem;
+
+  @media only screen and (min-width: 45rem) {
+    font-size: 1.728rem;
+  }
+}
+
+p {
+  font-size: 1.125rem;
+  line-height: 1.5;
+
+  @media only screen and (min-width: 45rem) {
+    font-size: 1.25rem;
+  }
+}
+
+/* ------ BODY ------ */
 body .container {
     display: grid;
     justify-items: center;
     gap: 1.5rem;
+
+    padding: 0.5rem;
+
+    .header,
+    main,
+    .aside {
+        width: 100%;
+    }
 
     @media only screen and (min-width: 45rem) {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-ul {
-    padding: 0;
-    margin: 0;
-}
-
-h2 {
-    margin-bottom: 1rem;
-}
-
-.container {
-    width: min(60rem, 100%);
-    padding: 1.5rem;
-}
-
+/* --- HEADER (IE. TITLE) --- */
 .header {
-    grid-column: 1 / -1;
+    color: #fff;
 
-    display: grid;
+    padding: 1rem;
+    border-bottom: 0.0125rem solid #fff;
+
+    grid-column: 1 / -1;
+}
+
+/* --- MAIN (IE. LIST) --- */
+.main {
+    color: #fff;
+    padding: 1.5rem;
 }
 
 .friends-list__title {
@@ -66,6 +125,10 @@ h2 {
 
     padding: 0.5rem;
 
+    background-color: var(--color--primary);
+    /* border: 0.0125rem solid var(--color--primary); */
+    border-radius: 1.5rem;
+
     .avatar {
         width: 10rem;
         object-fit: cover;
@@ -84,9 +147,29 @@ h2 {
     }
 }
 
+/* --- ASIDE (IE. FORM) --- */
+.aside {
+    color: #fff;
+    
+    padding: 1.5rem;
+    border-top: 0.0125rem solid #fff;
+
+    @media only screen and (min-width: 45rem) {
+        border-left: 0.0125rem solid #fff;
+        border-top: 0;
+    }
+}
+
 #form {
     display: grid;
     gap: 1rem;
+
+    input,
+    button {
+        padding: 0.25rem;
+        border: none;
+        border-radius: 0.5rem;
+    }
 
     input {
         width: 100%;
@@ -95,6 +178,19 @@ h2 {
 
 .formbox {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
+    
+    @media only screen and (min-width: 45rem) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+#btnAddFriend {
+    background-color: #26496c;
+    color: #fff;
+}
+
+#btnAddFriend:where(:hover, :focus-visible) {
+    cursor: pointer;
+    background-color: #3f7bb4;
 }
